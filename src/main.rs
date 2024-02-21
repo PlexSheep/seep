@@ -17,7 +17,7 @@ fn main() -> Result<(), io::Error> {
     let mut buf = Vec::new();
     io::stdin()
         // FIXME: we don't want to always read to end! If we want to seep a network socket for
-        // example.
+        // example. #1
         .read_to_end(&mut buf)
         .inspect_err(|err| eprintln!("{err}"))?;
 
