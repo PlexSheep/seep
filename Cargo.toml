@@ -1,15 +1,15 @@
 [package]
-name = "template"
+name = "see"
 version = "0.1.0"
 edition = "2021"
-publish = false
+publish = true
 authors = ["Christoph J. Scherr <software@cscherr.de>"]
 license = "MIT"
-description = "No description yet"
+description = "print stdin to terminal, then to stdout (for piping)"
 readme = "README.md"
-homepage = "https://git.cscherr.de/PlexSheep/rs-base"
-repository = "https://git.cscherr.de/PlexSheep/rs-base"
-keywords = ["template"]
+homepage = "https://git.cscherr.de/PlexSheep/see"
+repository = "https://git.cscherr.de/PlexSheep/see"
+keywords = ["cli"]
 
 
 [dependencies]
