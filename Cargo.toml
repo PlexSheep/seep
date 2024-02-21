@@ -1,5 +1,5 @@
 [package]
-name = "see"
+name = "seep"
 version = "0.1.0"
 edition = "2021"
 publish = true
@@ -7,10 +7,8 @@ authors = ["Christoph J. Scherr <software@cscherr.de>"]
 license = "MIT"
 description = "print stdin to terminal, then to stdout (for piping)"
 readme = "README.md"
-homepage = "https://git.cscherr.de/PlexSheep/see"
-repository = "https://git.cscherr.de/PlexSheep/see"
+homepage = "https://git.cscherr.de/PlexSheep/seep"
+repository = "https://git.cscherr.de/PlexSheep/seep"
 keywords = ["cli"]
 
-
 [dependencies]
-
