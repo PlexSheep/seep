@@ -1,7 +1,4 @@
-use std::{
-    fs,
-    io::{self, prelude::*},
-};
+use std::io::{self, prelude::*};
 
 fn main() -> Result<(), io::Error> {
     let mut tty = std::fs::File::options()
