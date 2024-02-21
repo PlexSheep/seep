@@ -1,5 +1,6 @@
 use std::io::{self, prelude::*};
 const TTY: &str = "/dev/tty";
+const BUFSIZ: usize = 2 << 8;
 
 fn main() -> Result<(), io::Error> {
     // /dev/tty points the currently opened terminal. If we write to it directly, we bypass piping
@@ -14,19 +15,20 @@ fn main() -> Result<(), io::Error> {
     let mut stdout = io::stdout();
     // sadly, we need to store the content of `stdin` in a buffer and cannot just `io::copy()` it
     // multiple times. `tee` from the GNU coreutils does this too.
-    let mut buf = Vec::new();
-    io::stdin()
-        // FIXME: we don't want to always read to end! If we want to seep a network socket for
-        // example. #1
-        .read_to_end(&mut buf)
-        .inspect_err(|err| eprintln!("{err}"))?;
+    let mut buf = [0; BUFSIZ];
+    let mut stdin = io::stdin();
+    let mut read_amount = buf.len();
+    while read_amount == buf.len() {
+        read_amount = stdin.read(&mut buf).inspect_err(|err| eprintln!("{err}"))?;
 
-    // now we just write to our targets
-    tty.write_all(&buf).inspect_err(|err| eprintln!("{err}"))?;
+        // now we just write to our targets
+        tty.write_all(&buf[..read_amount])
+            .inspect_err(|err| eprintln!("{err}"))?;
+        stdout
+            .write_all(&buf[..read_amount])
+            .inspect_err(|err| eprintln!("{err}"))?;
+    }
     tty.flush().inspect_err(|err| eprintln!("{err}"))?; // make sure it comes there
-    stdout
-        .write_all(&buf)
-        .inspect_err(|err| eprintln!("{err}"))?;
     stdout.flush().inspect_err(|err| eprintln!("{err}"))?; // make sure it comes there
     Ok(())
 }
