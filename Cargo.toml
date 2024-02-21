@@ -5,10 +5,11 @@ edition = "2021"
 publish = true
 authors = ["Christoph J. Scherr <software@cscherr.de>"]
 license = "MIT"
-description = "print stdin to terminal, then to stdout (for piping)"
+description = "print the stdin and redirect to stdout and files"
 readme = "README.md"
 homepage = "https://git.cscherr.de/PlexSheep/seep"
 repository = "https://git.cscherr.de/PlexSheep/seep"
 keywords = ["cli"]
 
 [dependencies]
+clap = { version = "4.5.1", features = ["derive"] }

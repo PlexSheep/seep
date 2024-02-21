@@ -1,8 +1,23 @@
-use std::io::{self, prelude::*};
+use std::{
+    fs::File,
+    io::{self, prelude::*},
+    path::PathBuf,
+};
+
+use clap::Parser;
+
 const TTY: &str = "/dev/tty";
 const BUFSIZ: usize = 2 << 8;
 
+#[derive(Parser)]
+#[command(version, about)]
+struct Cli {
+    targets: Vec<PathBuf>,
+}
+
 fn main() -> Result<(), io::Error> {
+    let cli = Cli::parse();
+
     // /dev/tty points the currently opened terminal. If we write to it directly, we bypass piping
     // to the next process
     let tty = std::fs::File::options()
@@ -16,6 +31,19 @@ fn main() -> Result<(), io::Error> {
     // any file or stream that we want our stdin to go to can be a target. The only condition is
     // that we can write to it.
     let mut targets: Vec<Box<dyn Write>> = vec![Box::new(tty), Box::new(io::stdout())];
+    for path in cli.targets {
+        match File::options()
+            .write(true)
+            .read(false)
+            .create(true)
+            .open(path)
+        {
+            Ok(f) => targets.push(Box::new(f)),
+            Err(err) => {
+                eprintln!("error while opening file: {err}");
+            }
+        }
+    }
 
     // fill the buffer with data from stdin, then write the read data to all targets
     let mut buf = [0; BUFSIZ];
