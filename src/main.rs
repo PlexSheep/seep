@@ -28,6 +28,8 @@ fn main() -> Result<(), io::Error> {
             .write_all(&buf[..read_amount])
             .inspect_err(|err| eprintln!("{err}"))?;
     }
+    tty.write(b"\n").inspect_err(|err| eprintln!("{err}"))?; // otherwise weird wrapped together
+                                                             // lines may happen
     tty.flush().inspect_err(|err| eprintln!("{err}"))?; // make sure it comes there
     stdout.flush().inspect_err(|err| eprintln!("{err}"))?; // make sure it comes there
     Ok(())
