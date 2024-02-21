@@ -5,32 +5,44 @@ const BUFSIZ: usize = 2 << 8;
 fn main() -> Result<(), io::Error> {
     // /dev/tty points the currently opened terminal. If we write to it directly, we bypass piping
     // to the next process
-    let mut tty = std::fs::File::options()
+    let tty = std::fs::File::options()
         .write(true)
         .read(false)
         // try to use $TTY set by the terminal, otherwise use the default tty
         .open(std::env::var("TTY").unwrap_or(String::from(TTY)))
         .inspect_err(|err| eprintln!("could not open tty: {err}"))?;
-    // we want to write to the stdout too
-    let mut stdout = io::stdout();
-    // sadly, we need to store the content of `stdin` in a buffer and cannot just `io::copy()` it
-    // multiple times. `tee` from the GNU coreutils does this too.
+
+    // fill our targets
+    // any file or stream that we want our stdin to go to can be a target. The only condition is
+    // that we can write to it.
+    let mut targets: Vec<Box<dyn Write>> = vec![Box::new(tty), Box::new(io::stdout())];
+
+    // fill the buffer with data from stdin, then write the read data to all targets
     let mut buf = [0; BUFSIZ];
     let mut stdin = io::stdin();
     let mut read_amount = buf.len();
     while read_amount == buf.len() {
+        // first we read data from the stdin
         read_amount = stdin.read(&mut buf).inspect_err(|err| eprintln!("{err}"))?;
 
-        // now we just write to our targets
-        tty.write_all(&buf[..read_amount])
-            .inspect_err(|err| eprintln!("{err}"))?;
-        stdout
-            .write_all(&buf[..read_amount])
-            .inspect_err(|err| eprintln!("{err}"))?;
+        // now we just write it to our targets
+        for target in targets.iter_mut() {
+            target
+                .write_all(&buf[..read_amount])
+                .inspect_err(|err| eprintln!("{err}"))?;
+        }
     }
-    tty.write(b"\n").inspect_err(|err| eprintln!("{err}"))?; // otherwise weird wrapped together
-                                                             // lines may happen
-    tty.flush().inspect_err(|err| eprintln!("{err}"))?; // make sure it comes there
-    stdout.flush().inspect_err(|err| eprintln!("{err}"))?; // make sure it comes there
+
+    // append a newline to the tty
+    // otherwise weird wrapped together lines may happen
+    targets[0]
+        .write(b"\n")
+        .inspect_err(|err| eprintln!("{err}"))?;
+
+    // flush all targets
+    for target in targets.iter_mut() {
+        target.flush().inspect_err(|err| eprintln!("{err}"))?; // make sure it comes there
+    }
+
     Ok(())
 }
