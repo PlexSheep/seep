@@ -16,6 +16,8 @@ fn main() -> Result<(), io::Error> {
     // multiple times. `tee` from the GNU coreutils does this too.
     let mut buf = Vec::new();
     io::stdin()
+        // FIXME: we don't want to always read to end! If we want to seep a network socket for
+        // example.
         .read_to_end(&mut buf)
         .inspect_err(|err| eprintln!("{err}"))?;
 
