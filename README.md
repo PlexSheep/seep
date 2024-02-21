@@ -1,9 +1,19 @@
 # seep
 
+![Project badge](https://img.shields.io/badge/language-Rust-blue.svg)
+![Crates.io License](https://img.shields.io/crates/l/seep)
+![Gitea Release](https://img.shields.io/gitea/v/release/PlexSheep/seep?gitea_url=https%3A%2F%2Fgit.cscherr.de)
+![Gitea language count](https://img.shields.io/gitea/languages/count/PlexSheep/seep?gitea_url=https%3A%2F%2Fgit.cscherr.de)
+[![cargo checks and tests](https://github.com/PlexSheep/seep/actions/workflows/cargo.yaml/badge.svg)](https://github.com/PlexSheep/seep/actions/workflows/cargo.yaml)
+
 Print `stdin` to terminal, then pipe into next process.
 
 `seep` (short for see pipe and also to describe leaks in real pipes) has the
 purpose of letting you peek at what you're piping.
+
+* [Original Repository](https://git.cscherr.de/PlexSheep/seep)
+* [GitHub Mirror](https://github.com/PlexSheep/seep)
+* [crates.io](https://crates.io/crates/seep)
 
 ## Usage
 
